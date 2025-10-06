@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Form Mockup Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #1e1e1e;
+            --bg-secondary: #2d2d2d;
+            --bg-tertiary: #3d3d3d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border-color: #404040;
+            --accent: #007acc;
+            --accent-hover: #1a8cd8;
+            --canvas-bg: #252525;
+            --grid-color: #333333;
+        }
+
+        .light-mode {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-tertiary: #e8e8e8;
+            --text-primary: #1e1e1e;
+            --text-secondary: #606060;
+            --border-color: #d0d0d0;
+            --accent: #007acc;
+            --accent-hover: #1a8cd8;
+            --canvas-bg: #fafafa;
+            --grid-color: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            width: 60px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 10px 5px;
+            gap: 5px;
+        }
+
+        .tool-btn {
+            width: 50px;
+            height: 50px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s;
+            color: var(--text-primary);
+        }
+
+        .tool-btn:hover {
+            background: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .tool-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* Properties Panel */
+        .properties {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .prop-section {
+            margin-bottom: 20px;
+        }
+
+        .prop-section h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .prop-item {
+            margin-bottom: 12px;
+        }
+
+        .prop-label {
+            font-size: 13px;
+            margin-bottom: 5px;
+            display: block;
+            color: var(--text-secondary);
+        }
+
+        .prop-input {
+            width: 100%;
+            padding: 8px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+
+        .prop-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Canvas */
+        .canvas-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            height: 50px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 15px;
+        }
+
+        .top-bar button {
+            padding: 8px 16px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+
+        .top-bar button:hover {
+            background: var(--accent-hover);
+        }
+
+        .canvas {
+            flex: 1;
+            position: relative;
+            overflow: auto;
+            background: var(--canvas-bg);
+        }
+
+        .canvas.show-grid {
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .element {
+            position: absolute;
+            border: 2px solid transparent;
+            cursor: move;
+            transition: border-color 0.2s;
+        }
+
+        .element:hover {
+            border-color: var(--accent);
+        }
+
+        .element.selected {
+            border-color: var(--accent);
+        }
+
+        .element input, .element select, .element textarea, .element button {
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: white;
+            color: #333;
+        }
+
+        .element label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .element button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .resize-handle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--accent);
+            border: 2px solid white;
+            border-radius: 50%;
+            right: -5px;
+            bottom: -5px;
+            cursor: nwse-resize;
+        }
+
+        .dropdown-config {
+            margin-top: 10px;
+        }
+
+        .dropdown-option {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .dropdown-option input {
+            flex: 1;
+        }
+
+        .remove-option {
+            padding: 4px 8px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .add-option {
+            padding: 6px 12px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .zoom-btn {
+            width: 30px;
+            height: 30px;
+            padding: 0 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: -30px;
+            right: 0;
+            padding: 4px 8px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        select.prop-input {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="tool-btn" onclick="toggleTheme()" title="Toggle Theme">🌓</div>
+            <div class="tool-btn" onclick="toggleGrid()" title="Toggle Grid">📐</div>
+            <div class="tool-btn active" data-tool="input" onclick="selectTool('input')" title="Text Input">📝</div>
+            <div class="tool-btn" data-tool="dropdown" onclick="selectTool('dropdown')" title="Dropdown">📋</div>
+            <div class="tool-btn" data-tool="textarea" onclick="selectTool('textarea')" title="Text Area">📄</div>
+            <div class="tool-btn" data-tool="button" onclick="selectTool('button')" title="Button">🔘</div>
+            <div class="tool-btn" data-tool="checkbox" onclick="selectTool('checkbox')" title="Checkbox">☑️</div>
+            <div class="tool-btn" data-tool="radio" onclick="selectTool('radio')" title="Radio Button">🔵</div>
+            <div class="tool-btn" data-tool="label" onclick="selectTool('label')" title="Label">🏷️</div>
+        </div>
+
+        <!-- Properties Panel -->
+        <div class="properties">
+            <div class="prop-section">
+                <h3>Element Properties</h3>
+                <div id="elementProps">
+                    <p style="color: var(--text-secondary); font-size: 13px;">Select an element to edit properties</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Canvas -->
+        <div class="canvas-container">
+            <div class="top-bar">
+                <button onclick="exportHTML()">📥 Export HTML</button>
+                <button onclick="clearCanvas()">🗑️ Clear Canvas</button>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="snapToggle" checked onchange="toggleSnap()">
+                    <label for="snapToggle" style="margin: 0; font-size: 13px;">Snap to Grid</label>
+                </div>
+                <div class="zoom-controls">
+                    <button class="zoom-btn" onclick="zoom(-0.1)">−</button>
+                    <span id="zoomLevel" style="font-size: 13px; min-width: 50px; text-align: center;">100%</span>
+                    <button class="zoom-btn" onclick="zoom(0.1)">+</button>
+                </div>
+            </div>
+            <div class="canvas show-grid" id="canvas"></div>
+        </div>
+    </div>
+
+    <script>
+        let selectedTool = 'input';
+        let selectedElement = null;
+        let isDragging = false;
+        let isResizing = false;
+        let dragOffset = { x: 0, y: 0 };
+        let elementCounter = 0;
+        let elements = {};
+        let snapToGrid = true;
+        let zoomLevel = 1;
+
+        function selectTool(tool) {
+            selectedTool = tool;
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+        }
+
+        function toggleGrid() {
+            document.getElementById('canvas').classList.toggle('show-grid');
+        }
+
+        function toggleSnap() {
+            snapToGrid = document.getElementById('snapToggle').checked;
+        }
+
+        function snap(value) {
+            if (!snapToGrid) return value;
+            return Math.round(value / 20) * 20;
+        }
+
+        function zoom(delta) {
+            zoomLevel = Math.max(0.5, Math.min(2, zoomLevel + delta));
+            document.getElementById('canvas').style.transform = `scale(${zoomLevel})`;
+            document.getElementById('canvas').style.transformOrigin = 'top left';
+            document.getElementById('zoomLevel').textContent = Math.round(zoomLevel * 100) + '%';
+        }
+
+        document.getElementById('canvas').addEventListener('click', (e) => {
+            if (e.target.id === 'canvas') {
+                const rect = e.target.getBoundingClientRect();
+                const x = snap((e.clientX - rect.left) / zoomLevel);
+                const y = snap((e.clientY - rect.top) / zoomLevel);
+                createElement(selectedTool, x, y);
+            }
+        });
+
+        function createElement(type, x, y) {
+            const id = `element-${elementCounter++}`;
+            const element = document.createElement('div');
+            element.className = 'element';
+            element.id = id;
+            element.style.left = x + 'px';
+            element.style.top = y + 'px';
+            element.style.width = '200px';
+
+            const elementData = {
+                id,
+                type,
+                x,
+                y,
+                width: 200,
+                label: type.charAt(0).toUpperCase() + type.slice(1),
+                placeholder: 'Enter ' + type,
+                options: ['Option 1', 'Option 2', 'Option 3']
+            };
+
+            let content = '';
+            switch(type) {
+                case 'input':
+                    content = `<label>${elementData.label}</label><input type="text" placeholder="${elementData.placeholder}">`;
+                    break;
+                case 'dropdown':
+                    content = `<label>${elementData.label}</label><select>${elementData.options.map(opt => `<option>${opt}</option>`).join('')}</select>`;
+                    break;
+                case 'textarea':
+                    content = `<label>${elementData.label}</label><textarea rows="4" placeholder="${elementData.placeholder}"></textarea>`;
+                    elementData.width = 300;
+                    element.style.width = '300px';
+                    break;
+                case 'button':
+                    content = `<button>Submit</button>`;
+                    elementData.width = 150;
+                    element.style.width = '150px';
+                    break;
+                case 'checkbox':
+                    content = `<div style="display: flex; align-items: center; gap: 8px;"><input type="checkbox" style="width: auto;"><label style="margin: 0;">${elementData.label}</label></div>`;
+                    break;
+                case 'radio':
+                    content = `<div style="display: flex; align-items: center; gap: 8px;"><input type="radio" name="radio-${id}" style="width: auto;"><label style="margin: 0;">${elementData.label}</label></div>`;
+                    break;
+                case 'label':
+                    content = `<label style="font-size: 16px;">${elementData.label}</label>`;
+                    break;
+            }
+
+            element.innerHTML = content + '<div class="resize-handle"></div>';
+            
+            element.addEventListener('mousedown', (e) => {
+                if (e.target.classList.contains('resize-handle')) {
+                    isResizing = true;
+                    e.stopPropagation();
+                } else if (e.target === element || e.target.parentElement === element) {
+                    isDragging = true;
+                    const rect = element.getBoundingClientRect();
+                    dragOffset.x = (e.clientX - rect.left) / zoomLevel;
+                    dragOffset.y = (e.clientY - rect.top) / zoomLevel;
+                    selectElement(id);
+                    e.stopPropagation();
+                }
+            });
+
+            document.getElementById('canvas').appendChild(element);
+            elements[id] = elementData;
+            selectElement(id);
+        }
+
+        function selectElement(id) {
+            document.querySelectorAll('.element').forEach(el => el.classList.remove('selected'));
+            document.getElementById(id).classList.add('selected');
+            selectedElement = id;
+            showProperties(id);
+        }
+
+        function showProperties(id) {
+            const data = elements[id];
+            let html = `
+                <div class="prop-item">
+                    <label class="prop-label">Label</label>
+                    <input class="prop-input" value="${data.label}" onchange="updateProperty('${id}', 'label', this.value)">
+                </div>
+                <div class="prop-item">
+                    <label class="prop-label">Width (px)</label>
+                    <input class="prop-input" type="number" value="${data.width}" onchange="updateProperty('${id}', 'width', this.value)">
+                </div>
+                <div class="prop-item">
+                    <label class="prop-label">X Position</label>
+                    <input class="prop-input" type="number" value="${data.x}" onchange="updateProperty('${id}', 'x', this.value)">
+                </div>
+                <div class="prop-item">
+                    <label class="prop-label">Y Position</label>
+                    <input class="prop-input" type="number" value="${data.y}" onchange="updateProperty('${id}', 'y', this.value)">
+                </div>
+            `;
+
+            if (data.type === 'input' || data.type === 'textarea') {
+                html += `
+                    <div class="prop-item">
+                        <label class="prop-label">Placeholder</label>
+                        <input class="prop-input" value="${data.placeholder}" onchange="updateProperty('${id}', 'placeholder', this.value)">
+                    </div>
+                `;
+            }
+
+            if (data.type === 'dropdown') {
+                html += `
+                    <div class="prop-item">
+                        <label class="prop-label">Dropdown Options</label>
+                        <div class="dropdown-config" id="dropdown-options-${id}">
+                            ${data.options.map((opt, idx) => `
+                                <div class="dropdown-option">
+                                    <input class="prop-input" value="${opt}" onchange="updateOption('${id}', ${idx}, this.value)">
+                                    <button class="remove-option" onclick="removeOption('${id}', ${idx})">✕</button>
+                                </div>
+                            `).join('')}
+                            <button class="add-option" onclick="addOption('${id}')">+ Add Option</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `<button class="delete-btn" onclick="deleteElement('${id}')" style="position: relative; top: 0; margin-top: 20px; width: 100%;">Delete Element</button>`;
+
+            document.getElementById('elementProps').innerHTML = html;
+        }
+
+        function updateProperty(id, prop, value) {
+            const element = document.getElementById(id);
+            elements[id][prop] = value;
+
+            if (prop === 'width') {
+                element.style.width = value + 'px';
+            } else if (prop === 'x') {
+                element.style.left = value + 'px';
+            } else if (prop === 'y') {
+                element.style.top = value + 'px';
+            } else if (prop === 'label') {
+                const label = element.querySelector('label');
+                if (label) label.textContent = value;
+            } else if (prop === 'placeholder') {
+                const input = element.querySelector('input, textarea');
+                if (input) input.placeholder = value;
+            }
+        }
+
+        function updateOption(id, idx, value) {
+            elements[id].options[idx] = value;
+            const select = document.getElementById(id).querySelector('select');
+            select.options[idx].text = value;
+        }
+
+        function addOption(id) {
+            elements[id].options.push('New Option');
+            const select = document.getElementById(id).querySelector('select');
+            const option = document.createElement('option');
+            option.text = 'New Option';
+            select.add(option);
+            showProperties(id);
+        }
+
+        function removeOption(id, idx) {
+            elements[id].options.splice(idx, 1);
+            const select = document.getElementById(id).querySelector('select');
+            select.remove(idx);
+            showProperties(id);
+        }
+
+        function deleteElement(id) {
+            document.getElementById(id).remove();
+            delete elements[id];
+            document.getElementById('elementProps').innerHTML = '<p style="color: var(--text-secondary); font-size: 13px;">Select an element to edit properties</p>';
+            selectedElement = null;
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging && selectedElement) {
+                const canvas = document.getElementById('canvas');
+                const rect = canvas.getBoundingClientRect();
+                const x = snap((e.clientX - rect.left) / zoomLevel - dragOffset.x);
+                const y = snap((e.clientY - rect.top) / zoomLevel - dragOffset.y);
+                
+                const element = document.getElementById(selectedElement);
+                element.style.left = x + 'px';
+                element.style.top = y + 'px';
+                elements[selectedElement].x = x;
+                elements[selectedElement].y = y;
+            } else if (isResizing && selectedElement) {
+                const canvas = document.getElementById('canvas');
+                const rect = canvas.getBoundingClientRect();
+                const element = document.getElementById(selectedElement);
+                const width = snap((e.clientX - rect.left) / zoomLevel - elements[selectedElement].x);
+                
+                if (width > 50) {
+                    element.style.width = width + 'px';
+                    elements[selectedElement].width = width;
+                }
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            isResizing = false;
+            if (selectedElement) {
+                showProperties(selectedElement);
+            }
+        });
+
+        function clearCanvas() {
+            if (confirm('Are you sure you want to clear the canvas?')) {
+                document.getElementById('canvas').innerHTML = '';
+                elements = {};
+                document.getElementById('elementProps').innerHTML = '<p style="color: var(--text-secondary); font-size: 13px;">Select an element to edit properties</p>';
+                selectedElement = null;
+            }
+        }
+
+        function exportHTML() {
+            let html = '<!DOCTYPE html>\n<html>\n<head>\n  <meta charset="UTF-8">\n  <title>Form Mockup</title>\n  <style>\n    body { font-family: Arial, sans-serif; padding: 20px; }\n    .form-element { margin-bottom: 15px; }\n    label { display: block; margin-bottom: 5px; font-weight: bold; }\n    input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }\n    button { padding: 10px 20px; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\n  </style>\n</head>\n<body>\n  <form>\n';
+
+            Object.values(elements).forEach(el => {
+                html += '    <div class="form-element">\n';
+                switch(el.type) {
+                    case 'input':
+                        html += `      <label>${el.label}</label>\n      <input type="text" placeholder="${el.placeholder}">\n`;
+                        break;
+                    case 'dropdown':
+                        html += `      <label>${el.label}</label>\n      <select>\n        ${el.options.map(opt => `<option>${opt}</option>`).join('\n        ')}\n      </select>\n`;
+                        break;
+                    case 'textarea':
+                        html += `      <label>${el.label}</label>\n      <textarea rows="4" placeholder="${el.placeholder}"></textarea>\n`;
+                        break;
+                    case 'button':
+                        html += `      <button type="button">Submit</button>\n`;
+                        break;
+                    case 'checkbox':
+                        html += `      <label><input type="checkbox"> ${el.label}</label>\n`;
+                        break;
+                    case 'radio':
+                        html += `      <label><input type="radio" name="radio"> ${el.label}</label>\n`;
+                        break;
+                    case 'label':
+                        html += `      <label>${el.label}</label>\n`;
+                        break;
+                }
+                html += '    </div>\n';
+            });
+
+            html += '  </form>\n</body>\n</html>';
+
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'form-mockup.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
