@@ -891,3 +891,558 @@
                     <label class="prop-label">Y Position</label>
                     <input class="prop-input" type="number" value="${data.y}" oninput="updateProperty('${id}', 'y', this.value)">
                 </div>
+                <div class="prop-item">
+                    <label class="prop-label">Font Size</label>
+                    <div class="slider-group">
+                        <input type="range" min="8" max="48" value="${data.fontSize}" oninput="updateProperty('${id}', 'fontSize', this.value)">
+                        <span>${data.fontSize}px</span>
+                    </div>
+                </div>
+                <div class="prop-item">
+                    <label class="prop-label">Font Weight</label>
+                    <select class="prop-input" onchange="updateProperty('${id}', 'fontWeight', this.value)">
+                        <option value="normal" ${data.fontWeight === 'normal' ? 'selected' : ''}>Normal</option>
+                        <option value="bold" ${data.fontWeight === 'bold' ? 'selected' : ''}>Bold</option>
+                        <option value="600" ${data.fontWeight === '600' ? 'selected' : ''}>Semi-Bold</option>
+                        <option value="300" ${data.fontWeight === '300' ? 'selected' : ''}>Light</option>
+                    </select>
+                </div>
+                <div class="prop-item">
+                    <label class="prop-label">Text Align</label>
+                    <select class="prop-input" onchange="updateProperty('${id}', 'textAlign', this.value)">
+                        <option value="left" ${data.textAlign === 'left' ? 'selected' : ''}>Left</option>
+                        <option value="center" ${data.textAlign === 'center' ? 'selected' : ''}>Center</option>
+                        <option value="right" ${data.textAlign === 'right' ? 'selected' : ''}>Right</option>
+                    </select>
+                </div>
+                <div class="prop-item">
+                    <label class="prop-label">Background Color</label>
+                    <div class="color-input-group">
+                        <input type="color" value="${data.bgColor}" oninput="updateProperty('${id}', 'bgColor', this.value)">
+                        <input class="prop-input" type="text" value="${data.bgColor}" oninput="updateProperty('${id}', 'bgColor', this.value)">
+                    </div>
+                </div>
+                <div class="prop-item">
+                    <label class="prop-label">Text Color</label>
+                    <div class="color-input-group">
+                        <input type="color" value="${data.textColor}" oninput="updateProperty('${id}', 'textColor', this.value)">
+                        <input class="prop-input" type="text" value="${data.textColor}" oninput="updateProperty('${id}', 'textColor', this.value)">
+                    </div>
+                </div>
+                <div class="prop-item">
+                    <label class="prop-label">Border Color</label>
+                    <div class="color-input-group">
+                        <input type="color" value="${data.borderColor}" oninput="updateProperty('${id}', 'borderColor', this.value)">
+                        <input class="prop-input" type="text" value="${data.borderColor}" oninput="updateProperty('${id}', 'borderColor', this.value)">
+                    </div>
+                </div>
+                <div class="prop-item">
+                    <label class="prop-label">Border Width</label>
+                    <div class="slider-group">
+                        <input type="range" min="0" max="10" value="${data.borderWidth}" oninput="updateProperty('${id}', 'borderWidth', this.value)">
+                        <span>${data.borderWidth}px</span>
+                    </div>
+                </div>
+                <div class="prop-item">
+                    <label class="prop-label">Border Radius</label>
+                    <div class="slider-group">
+                        <input type="range" min="0" max="50" value="${data.borderRadius}" oninput="updateProperty('${id}', 'borderRadius', this.value)">
+                        <span>${data.borderRadius}px</span>
+                    </div>
+                </div>
+                <div class="prop-item">
+                    <label class="prop-label">Padding</label>
+                    <div class="slider-group">
+                        <input type="range" min="0" max="30" value="${data.padding}" oninput="updateProperty('${id}', 'padding', this.value)">
+                        <span>${data.padding}px</span>
+                    </div>
+                </div>
+            `;
+
+            if (data.type === 'input' || data.type === 'textarea') {
+                html += `
+                    <div class="prop-item">
+                        <label class="prop-label">Placeholder</label>
+                        <input class="prop-input" value="${data.placeholder}" oninput="updateProperty('${id}', 'placeholder', this.value)">
+                    </div>
+                `;
+            }
+
+            if (data.type === 'dropdown') {
+                html += `
+                    <div class="prop-item">
+                        <label class="prop-label">Dropdown Options</label>
+                        <div class="dropdown-config" id="dropdown-options-${id}">
+                            ${data.options.map((opt, idx) => `
+                                <div class="dropdown-option">
+                                    <input class="prop-input" value="${opt}" onchange="updateOption('${id}', ${idx}, this.value)">
+                                    <button class="remove-option" onclick="removeOption('${id}', ${idx})">✕</button>
+                                </div>
+                            `).join('')}
+                            <button class="add-option" onclick="addOption('${id}')">+ Add Option</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `
+                <div class="prop-item">
+                    <label class="prop-label">Alignment</label>
+                    <div class="alignment-grid">
+                        <div class="align-btn" onclick="alignElement('left')" title="Align Left">⬅️</div>
+                        <div class="align-btn" onclick="alignElement('center-h')" title="Center Horizontal">↔️</div>
+                        <div class="align-btn" onclick="alignElement('right')" title="Align Right">➡️</div>
+                        <div class="align-btn" onclick="alignElement('top')" title="Align Top">⬆️</div>
+                        <div class="align-btn" onclick="alignElement('center-v')" title="Center Vertical">↕️</div>
+                        <div class="align-btn" onclick="alignElement('bottom')" title="Align Bottom">⬇️</div>
+                    </div>
+                </div>
+                <div class="prop-item">
+                    <div class="quick-actions">
+                        <div class="quick-btn" onclick="duplicateElement()">📋 Duplicate</div>
+                        <div class="quick-btn" onclick="deleteSelected()">🗑️ Delete</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('elementProps').innerHTML = html;
+        }
+
+        function updateProperty(id, prop, value) {
+            const element = document.getElementById(id);
+            elements[id][prop] = prop === 'fontSize' || prop === 'borderWidth' || prop === 'borderRadius' || prop === 'padding' ? parseInt(value) : value;
+
+            if (prop === 'width') {
+                element.style.width = value + 'px';
+            } else if (prop === 'x') {
+                element.style.left = value + 'px';
+            } else if (prop === 'y') {
+                element.style.top = value + 'px';
+            } else {
+                rebuildElement(id);
+            }
+            
+            if (selectedElement === id) {
+                const sliders = document.querySelectorAll('.slider-group span');
+                sliders.forEach(slider => {
+                    const input = slider.previousElementSibling;
+                    if (input) {
+                        slider.textContent = input.value + 'px';
+                    }
+                });
+            }
+        }
+
+        function rebuildElement(id) {
+            const element = document.getElementById(id);
+            const data = elements[id];
+            element.innerHTML = '';
+            
+            let content = '';
+            const labelStyle = `style="font-size: ${data.fontSize}px; font-weight: ${data.fontWeight}; text-align: ${data.textAlign}; color: ${data.textColor};"`;
+            const inputStyle = `style="font-size: ${data.fontSize}px; background: ${data.bgColor}; color: ${data.textColor}; border: ${data.borderWidth}px solid ${data.borderColor}; border-radius: ${data.borderRadius}px; padding: ${data.padding}px;"`;
+
+            switch(data.type) {
+                case 'input':
+                    content = `<label class="editable-label" ${labelStyle} ondblclick="editLabel('${id}', this)">${data.label}</label><input type="text" placeholder="${data.placeholder}" ${inputStyle}>`;
+                    break;
+                case 'dropdown':
+                    content = `<label class="editable-label" ${labelStyle} ondblclick="editLabel('${id}', this)">${data.label}</label><select ${inputStyle}>${data.options.map(opt => `<option>${opt}</option>`).join('')}</select>`;
+                    break;
+                case 'textarea':
+                    content = `<label class="editable-label" ${labelStyle} ondblclick="editLabel('${id}', this)">${data.label}</label><textarea rows="4" placeholder="${data.placeholder}" ${inputStyle}></textarea>`;
+                    break;
+                case 'button':
+                    content = `<button ${inputStyle} ondblclick="editLabel('${id}', this)">${data.label}</button>`;
+                    break;
+                case 'checkbox':
+                    content = `<div style="display: flex; align-items: center; gap: 8px;"><input type="checkbox" style="width: auto;"><label class="editable-label" style="margin: 0; ${labelStyle}" ondblclick="editLabel('${id}', this)">${data.label}</label></div>`;
+                    break;
+                case 'radio':
+                    content = `<div style="display: flex; align-items: center; gap: 8px;"><input type="radio" name="radio-${id}" style="width: auto;"><label class="editable-label" style="margin: 0; ${labelStyle}" ondblclick="editLabel('${id}', this)">${data.label}</label></div>`;
+                    break;
+                case 'label':
+                    content = `<label class="editable-label" ${labelStyle} ondblclick="editLabel('${id}', this)">${data.label}</label>`;
+                    break;
+            }
+
+            element.innerHTML = content + `
+                <div class="corner-handles">
+                    <div class="corner-handle nw"></div>
+                    <div class="corner-handle ne"></div>
+                    <div class="corner-handle sw"></div>
+                    <div class="corner-handle se"></div>
+                </div>
+            `;
+        }
+
+        function updateOption(id, idx, value) {
+            elements[id].options[idx] = value;
+            const select = document.getElementById(id).querySelector('select');
+            select.options[idx].text = value;
+            saveState();
+        }
+
+        function addOption(id) {
+            elements[id].options.push('New Option');
+            rebuildElement(id);
+            showProperties(id);
+            saveState();
+        }
+
+        function removeOption(id, idx) {
+            if (elements[id].options.length > 1) {
+                elements[id].options.splice(idx, 1);
+                rebuildElement(id);
+                showProperties(id);
+                saveState();
+            }
+        }
+
+        function deleteSelected() {
+            if (selectedElement) {
+                document.getElementById(selectedElement).remove();
+                delete elements[selectedElement];
+                document.getElementById('elementProps').innerHTML = '<p style="color: var(--text-secondary); font-size: 13px;">Select an element to edit properties</p>';
+                selectedElement = null;
+                updateLayersPanel();
+                saveState();
+                showToast('Element deleted');
+            }
+        }
+
+        function duplicateElement() {
+            if (selectedElement) {
+                const originalData = {...elements[selectedElement]};
+                const newId = `element-${elementCounter++}`;
+                const newData = {
+                    ...originalData,
+                    id: newId,
+                    x: originalData.x + 20,
+                    y: originalData.y + 20,
+                    zIndex: elementCounter
+                };
+                elements[newId] = newData;
+                createElementFromData(newId, newData);
+                selectElement(newId);
+                saveState();
+                updateLayersPanel();
+                showToast('Element duplicated');
+            }
+        }
+
+        function copyElement() {
+            if (selectedElement) {
+                clipboard = {...elements[selectedElement]};
+                showToast('Element copied');
+            }
+        }
+
+        function pasteElement() {
+            if (clipboard) {
+                const newId = `element-${elementCounter++}`;
+                const newData = {
+                    ...clipboard,
+                    id: newId,
+                    x: clipboard.x + 20,
+                    y: clipboard.y + 20,
+                    zIndex: elementCounter
+                };
+                elements[newId] = newData;
+                createElementFromData(newId, newData);
+                selectElement(newId);
+                saveState();
+                updateLayersPanel();
+                showToast('Element pasted');
+            }
+        }
+
+        function alignElement(direction) {
+            if (!selectedElement) return;
+            
+            const canvas = document.getElementById('canvas');
+            const canvasWidth = canvas.clientWidth / zoomLevel;
+            const canvasHeight = canvas.clientHeight / zoomLevel;
+            const data = elements[selectedElement];
+            
+            switch(direction) {
+                case 'left':
+                    data.x = 20;
+                    break;
+                case 'center-h':
+                    data.x = (canvasWidth - data.width) / 2;
+                    break;
+                case 'right':
+                    data.x = canvasWidth - data.width - 20;
+                    break;
+                case 'top':
+                    data.y = 20;
+                    break;
+                case 'center-v':
+                    data.y = (canvasHeight - (data.height || 40)) / 2;
+                    break;
+                case 'bottom':
+                    data.y = canvasHeight - (data.height || 40) - 20;
+                    break;
+            }
+            
+            const element = document.getElementById(selectedElement);
+            element.style.left = data.x + 'px';
+            element.style.top = data.y + 'px';
+            showProperties(selectedElement);
+            saveState();
+            showToast('Element aligned');
+        }
+
+        function bringToFront() {
+            if (selectedElement) {
+                const maxZ = Math.max(...Object.values(elements).map(e => e.zIndex || 1));
+                elements[selectedElement].zIndex = maxZ + 1;
+                document.getElementById(selectedElement).style.zIndex = maxZ + 1;
+                updateLayersPanel();
+                saveState();
+                showToast('Brought to front');
+            }
+        }
+
+        function sendToBack() {
+            if (selectedElement) {
+                const minZ = Math.min(...Object.values(elements).map(e => e.zIndex || 1));
+                elements[selectedElement].zIndex = minZ - 1;
+                document.getElementById(selectedElement).style.zIndex = minZ - 1;
+                updateLayersPanel();
+                saveState();
+                showToast('Sent to back');
+            }
+        }
+
+        function updateLayersPanel() {
+            const panel = document.getElementById('layersPanel');
+            const sortedElements = Object.values(elements).sort((a, b) => (b.zIndex || 1) - (a.zIndex || 1));
+            
+            if (sortedElements.length === 0) {
+                panel.innerHTML = '<div style="color: var(--text-secondary); font-size: 12px; text-align: center; padding: 20px;">No elements yet</div>';
+                return;
+            }
+            
+            panel.innerHTML = sortedElements.map(el => {
+                const icons = {
+                    input: '📝',
+                    dropdown: '📋',
+                    textarea: '📄',
+                    button: '🔘',
+                    checkbox: '☑️',
+                    radio: '🔵',
+                    label: '🏷️'
+                };
+                return `
+                    <div class="layer-item ${el.id === selectedElement ? 'active' : ''}" onclick="selectElement('${el.id}')">
+                        <span><span class="layer-icon">${icons[el.type] || '📦'}</span>${el.label}</span>
+                        <span style="opacity: 0.5; font-size: 10px;">${el.type}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showContextMenu(x, y) {
+            const menu = document.getElementById('contextMenu');
+            menu.style.display = 'block';
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+        }
+
+        document.addEventListener('click', () => {
+            document.getElementById('contextMenu').style.display = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging && selectedElement) {
+                const canvas = document.getElementById('canvas');
+                const rect = canvas.getBoundingClientRect();
+                const x = snap((e.clientX - rect.left) / zoomLevel - dragOffset.x);
+                const y = snap((e.clientY - rect.top) / zoomLevel - dragOffset.y);
+                
+                const element = document.getElementById(selectedElement);
+                element.style.left = x + 'px';
+                element.style.top = y + 'px';
+                elements[selectedElement].x = x;
+                elements[selectedElement].y = y;
+            } else if (isResizing && selectedElement) {
+                const canvas = document.getElementById('canvas');
+                const rect = canvas.getBoundingClientRect();
+                const element = document.getElementById(selectedElement);
+                const data = elements[selectedElement];
+                
+                const mouseX = (e.clientX - rect.left) / zoomLevel;
+                const mouseY = (e.clientY - rect.top) / zoomLevel;
+                
+                if (resizeDirection === 'se') {
+                    const width = snap(mouseX - data.x);
+                    const height = snap(mouseY - data.y);
+                    if (width > 50) {
+                        element.style.width = width + 'px';
+                        data.width = width;
+                    }
+                    if (data.type === 'textarea' && height > 50) {
+                        element.style.height = height + 'px';
+                        data.height = height;
+                    }
+                }
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging || isResizing) {
+                saveState();
+            }
+            isDragging = false;
+            isResizing = false;
+            resizeDirection = null;
+            if (selectedElement) {
+                showProperties(selectedElement);
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'z') {
+                    e.preventDefault();
+                    undo();
+                } else if (e.key === 'y') {
+                    e.preventDefault();
+                    redo();
+                } else if (e.key === 'd') {
+                    e.preventDefault();
+                    duplicateElement();
+                } else if (e.key === 'c') {
+                    e.preventDefault();
+                    copyElement();
+                } else if (e.key === 'v') {
+                    e.preventDefault();
+                    pasteElement();
+                }
+            } else if (e.key === 'Delete' || e.key === 'Backspace') {
+                if (selectedElement && !e.target.matches('input, textarea')) {
+                    e.preventDefault();
+                    deleteSelected();
+                }
+            }
+        });
+
+        function clearCanvas() {
+            if (confirm('Are you sure you want to clear the canvas?')) {
+                document.getElementById('canvas').innerHTML = '';
+                elements = {};
+                document.getElementById('elementProps').innerHTML = '<p style="color: var(--text-secondary); font-size: 13px;">Select an element to edit properties</p>';
+                selectedElement = null;
+                updateLayersPanel();
+                history = [];
+                historyIndex = -1;
+                showToast('Canvas cleared');
+            }
+        }
+
+        function exportHTML() {
+            let html = '<!DOCTYPE html>\n<html>\n<head>\n  <meta charset="UTF-8">\n  <title>Form Mockup</title>\n  <style>\n    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }\n    .form-container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }\n    .form-element { margin-bottom: 15px; }\n    label { display: block; margin-bottom: 5px; font-weight: 500; }\n    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }\n    button { padding: 12px 24px; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }\n    button:hover { background: #1a8cd8; }\n  </style>\n</head>\n<body>\n  <div class="form-container">\n    <form>\n';
+
+            Object.values(elements).sort((a, b) => a.y - b.y).forEach(el => {
+                html += '      <div class="form-element">\n';
+                switch(el.type) {
+                    case 'input':
+                        html += `        <label>${el.label}</label>\n        <input type="text" placeholder="${el.placeholder}">\n`;
+                        break;
+                    case 'dropdown':
+                        html += `        <label>${el.label}</label>\n        <select>\n          ${el.options.map(opt => `<option>${opt}</option>`).join('\n          ')}\n        </select>\n`;
+                        break;
+                    case 'textarea':
+                        html += `        <label>${el.label}</label>\n        <textarea rows="4" placeholder="${el.placeholder}"></textarea>\n`;
+                        break;
+                    case 'button':
+                        html += `        <button type="button">${el.label}</button>\n`;
+                        break;
+                    case 'checkbox':
+                        html += `        <label><input type="checkbox" style="width: auto; margin-right: 8px;"> ${el.label}</label>\n`;
+                        break;
+                    case 'radio':
+                        html += `        <label><input type="radio" name="radio" style="width: auto; margin-right: 8px;"> ${el.label}</label>\n`;
+                        break;
+                    case 'label':
+                        html += `        <label>${el.label}</label>\n`;
+                        break;
+                }
+                html += '      </div>\n';
+            });
+
+            html += '    </form>\n  </div>\n</body>\n</html>';
+
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'form-mockup.html';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('HTML exported successfully!');
+        }
+
+        function exportJSON() {
+            const projectData = {
+                version: '1.0',
+                elements: elements,
+                settings: {
+                    snapToGrid: snapToGrid,
+                    zoomLevel: zoomLevel
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'mockup-project.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Project saved!');
+        }
+
+        function loadJSON() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const projectData = JSON.parse(event.target.result);
+                        elements = projectData.elements;
+                        snapToGrid = projectData.settings.snapToGrid;
+                        document.getElementById('snapToggle').checked = snapToGrid;
+                        rebuildCanvas();
+                        saveState();
+                        showToast('Project loaded successfully!');
+                    } catch (error) {
+                        alert('Error loading project file');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function showToast(message) {
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) existingToast.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        saveState();
+    </script>
+</body>
+</html>
